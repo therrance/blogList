@@ -1,57 +1,58 @@
-const blogsRouter = require('express').Router()
-const Blog = require('../models/blog')
+const blogsRouter = require("express").Router();
+const Blog = require("../models/blog");
 
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then(blogs => {
-    response.json(blogs.map(blog => blog.toJSON()))
-  })
-})
+blogsRouter.get("/", (request, response) => {
+  Blog.find({}).then((blogs) => {
+    response.json(blogs.map((blog) => blog.toJSON()));
+  });
+});
 
-blogsRouter.get('/:id', (request, response, next) => {
-  Note.findById(request.params.id)
-    .then(note => {
-      if (note) {
-        response.json(note.toJSON())
+blogsRouter.get("/:id", (request, response, next) => {
+  Blog.findById(request.params.id)
+    .then((blog) => {
+      if (blog) {
+        response.json(blog.toJSON());
       } else {
-        response.status(404).end()
+        response.status(404).end();
       }
     })
-    .catch(error => next(error))
-})
+    .catch((error) => next(error));
+});
 
-blogsRouter.post('/', (request, response, next) => {
-  const body = request.body
+blogsRouter.post("/", (request, response, next) => {
+  const body = request.body;
 
-  const blog = new Blog(body)
+  const blog = new Blog(body);
 
-  blog.save()
-    .then(savedNote => {
-      response.status(201).json(savedNote.toJSON())
+  blog
+    .save()
+    .then((savedNote) => {
+      response.status(201).json(savedNote.toJSON());
     })
-    .catch(error => next(error))
-})
+    .catch((error) => next(error));
+});
 
-blogsRouter.delete('/:id', (request, response, next) => {
-  Note.findByIdAndRemove(request.params.id)
+blogsRouter.delete("/:id", (request, response, next) => {
+  Blog.findByIdAndRemove(request.params.id)
     .then(() => {
-      response.status(204).end()
+      response.status(204).end();
     })
-    .catch(error => next(error))
-})
+    .catch((error) => next(error));
+});
 
-blogsRouter.put('/:id', (request, response, next) => {
-  const body = request.body
+blogsRouter.put("/:id", (request, response, next) => {
+  const body = request.body;
 
   const note = {
     content: body.content,
     important: body.important,
-  }
+  };
 
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
-    .then(updatedNote => {
-      response.json(updatedNote.toJSON())
+  Blog.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedBlog) => {
+      response.json(updatedBlog.toJSON());
     })
-    .catch(error => next(error))
-})
+    .catch((error) => next(error));
+});
 
-module.exports = blogsRouter
+module.exports = blogsRouter;
