@@ -25,9 +25,21 @@ const mostBlogs = (postArray) => {
   return { author, blogs: maxBlogs };
 };
 
+const mostLikes = (postArray) => {
+  let authorLikes = postArray.reduce((op, { author, likes }) => {
+    op[author] = op[author] || 0;
+    op[author] += likes;
+    return op;
+  }, {});
+  const maxLikes = _(authorLikes).values().max();
+  const author = _.invert(authorLikes)[maxLikes];
+  return { author, likes: maxLikes };
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
   mostBlogs,
+  mostLikes,
 };
