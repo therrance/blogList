@@ -44,10 +44,10 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
-  await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
-  await blogObject.save();
+  for (const blog of initialBlogs) {
+    let blogObject = new Blog(initialBlogs[0]);
+    await blogObject.save();
+  }
 });
 
 test("blogs are returned as json", async () => {
@@ -57,7 +57,7 @@ test("blogs are returned as json", async () => {
     .expect("Content-Type", /application\/json/);
 });
 
-test("there are two notes", async () => {
+test("there are six blogs", async () => {
   const responce = await api.get("/api/blogs");
 
   expect(responce.body).toHaveLength(initialBlogs.length);
@@ -80,7 +80,7 @@ test("a valid blog can be added", async () => {
   await api
     .post("/api/blogs")
     .send(newBlog)
-    .expect(200)
+    .expect(201)
     .expect("Content-Type", /application\/json/);
 
   const responce = await api.get("/api/blogs");
@@ -90,6 +90,23 @@ test("a valid blog can be added", async () => {
 
   expect(content).toContain("TDD harms architecture");
 });
+
+test('blog without title is not added', async () => {
+  const newBlog = {
+    author: "Robert C. Martin",
+    url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+    likes: 0,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+
+  expect(response.body).toHaveLength(initialBlogs.length)
+})
 
 afterAll(() => {
   mongoose.connection.close();
