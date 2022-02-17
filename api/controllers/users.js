@@ -17,6 +17,18 @@ usersRouter.post("/", async (request, response) => {
     });
   }
 
+  if (!username || !password) {
+    return response.status(400).json({
+      error: "username and password must be given"
+    });
+  }
+
+  if (password.length < 3) {
+    return response.status(400).json({
+      error: "password must be at least 3 symbols"
+    });
+  }
+
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 

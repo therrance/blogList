@@ -188,6 +188,69 @@ describe("when there is initially one user at db", () => {
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+
+  test("creation fails with proper statuscode and message if does non consist username", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "",
+      name: "Superuser",
+      password: "salainen",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("username and password must be given");
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test("creation fails with proper statuscode and message if does non consist password", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "user2",
+      name: "Superuser",
+      password: "",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("username and password must be given");
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test("creation fails with proper statuscode and message if password too small", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "user3",
+      name: "Superuser",
+      password: "12",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain("password must be at least 3 symbols");
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
 });
 
 afterAll(() => {
