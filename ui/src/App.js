@@ -13,7 +13,7 @@ const App = () => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [message, setMessage] = useState({text: null, severity: null})
 
     useEffect(() => {
         blogService.getAll().then(blogs => {
@@ -45,10 +45,7 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch (exception) {
-            setErrorMessage(`Wrong credentials: ${exception.response.data.error}`)
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
+            showError(`Wrong credentials: ${exception.response.data.error}`)
         }
     }
 
@@ -56,6 +53,21 @@ const App = () => {
         event.preventDefault()
         window.localStorage.removeItem('loggedBlogAppUser')
         setUser(null)
+    }
+
+    const showNotification = (message) => {
+        console.log('message: ',message)
+        setMessage({text: message, severity: 'notification'})
+        setTimeout(() => {
+            setMessage({text: null, severity: null})
+        }, 5000)
+    }
+
+    const showError = (message) => {
+        setMessage({text: message, severity: 'error'})
+        setTimeout(() => {
+            setMessage({text: null, severity: null})
+        }, 5000)
     }
 
     const createBlog = async (event) => {
@@ -74,17 +86,14 @@ const App = () => {
             setAuthor('')
             setUrl('')
             blogService.getAll().then((blogs) => setBlogs(blogs))
+            showNotification(`a new blog ${title} by ${author} added`)
         } catch (exception){
-            setErrorMessage(exception.response.data.error)
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
+            showError({text: exception.response.data.error, severity: 'error'})
         }
     }
 
     const loginForm = () => (<>
         <h1>blogs</h1>
-        <Notification message={errorMessage}/>
 
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
@@ -115,6 +124,7 @@ const App = () => {
 
 
     return (<>
+        <Notification text={message.text} severity={message.severity}/>
         {user === null ? loginForm() : <div>
             <p>{user.name} logged-in</p>
             <button onClick={handleLogout}>logout</button>
