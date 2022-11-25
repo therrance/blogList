@@ -1,5 +1,5 @@
 const Notification = ({ text, severity }) => {
-    if (text === null) {
+    if (text === '') {
         return null
     }
 
