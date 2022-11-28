@@ -19,7 +19,7 @@ const App = () => {
 
     useEffect(() => {
         blogService.getAll().then(blogs => {
-            setBlogs(blogs)
+            setBlogs(blogs.sort((m, n) => n.likes - m.likes))
         })
     }, [user])
 
@@ -99,6 +99,21 @@ const App = () => {
         }
     }
 
+    const deleteBlog = async (blog) => {
+        if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+            try {
+                await blogService.remove(blog.id)
+
+                showNotification(`blog ${blog.title} by ${blog.author} removed`)
+                setBlogs(blogs.filter((b) => b.id !== blog.id))
+            } catch (exception) {
+                const error = exception.response.data.error
+                showError(error)
+                console.log(error)
+            }
+        }
+    }
+
     const loginForm = () => {
         const hideWhenVisible = {display: loginVisible ? 'none' : ''}
         const showWhenVisible = {display: loginVisible ? '' : 'none'}
@@ -126,11 +141,14 @@ const App = () => {
     const blogFormRef = useRef();
 
     const blogForm = () => (
-        <>{blogs.map(blog => <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={updateBlog}
-        />)}</>)
+        <>{blogs.map(blog => (
+            <Blog
+                key={blog.id}
+                blog={blog}
+                updateBlog={updateBlog}
+                deleteBlog={deleteBlog}
+                user={user}
+            />))}</>)
 
 
     return (<>
