@@ -84,9 +84,24 @@ const App = () => {
         }
     }
 
+    const updateBlog = async (blog) => {
+        try {
+            const changedBlog = {...blog, likes: blog.likes + 1}
+
+            const updatedBlog = await blogService.update(changedBlog.id, changedBlog)
+
+            await setBlogs(
+                blogs.map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog))
+            )
+        } catch (exception) {
+            const error = exception.response.data.error
+            showError(error)
+        }
+    }
+
     const loginForm = () => {
-        const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-        const showWhenVisible = { display: loginVisible ? '' : 'none' }
+        const hideWhenVisible = {display: loginVisible ? 'none' : ''}
+        const showWhenVisible = {display: loginVisible ? '' : 'none'}
 
         return (<>
 
@@ -110,7 +125,12 @@ const App = () => {
 
     const blogFormRef = useRef();
 
-    const blogForm = () => (<>{blogs.map(blog => <Blog key={blog.id} blog={blog}/>)}</>)
+    const blogForm = () => (
+        <>{blogs.map(blog => <Blog
+            key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+        />)}</>)
 
 
     return (<>
