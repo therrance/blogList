@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef} from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
@@ -73,6 +73,7 @@ const App = () => {
     }
 
     const createBlog = async (blogObject) => {
+        blogFormRef.current.toggleVisibility();
         try {
             await blogService.create(blogObject)
 
@@ -97,8 +98,8 @@ const App = () => {
                 <LoginForm
                     username={username}
                     password={password}
-                    handleUsernameChange={({ target }) => setUsername(target.value)}
-                    handlePasswordChange={({ target }) => setPassword(target.value)}
+                    handleUsernameChange={({target}) => setUsername(target.value)}
+                    handlePasswordChange={({target}) => setPassword(target.value)}
                     handleSubmit={handleLogin}
                 />
                 <button onClick={() => setLoginVisible(false)}>cancel</button>
@@ -106,6 +107,8 @@ const App = () => {
 
         </>)
     }
+
+    const blogFormRef = useRef();
 
     const blogForm = () => (<>{blogs.map(blog => <Blog key={blog.id} blog={blog}/>)}</>)
 
@@ -117,7 +120,7 @@ const App = () => {
             <p>{user.name} logged-in</p>
             <button onClick={handleLogout}>logout</button>
             {blogForm()}
-            <Togglable buttonLabel="new blog">
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
                 <BlogForm
                     createBlog={createBlog}
                 />
