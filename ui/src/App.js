@@ -73,12 +73,12 @@ const App = () => {
     }
 
     const createBlog = async (blogObject) => {
-        blogFormRef.current.toggleVisibility();
         try {
             await blogService.create(blogObject)
 
             blogService.getAll().then((blogs) => setBlogs(blogs))
-            showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+            showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`);
+            blogFormRef.current.toggleVisibility();
         } catch (exception) {
             showError({text: exception.response.data.error, severity: 'error'})
         }
