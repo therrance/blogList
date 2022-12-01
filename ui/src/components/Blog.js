@@ -29,13 +29,17 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
         <>
           <div>{blog.url}</div>
           <div>
-                        likes {blog.likes}
-            <button onClick={() => updateBlog(blog)}>like</button>
+            likes {blog.likes}
+            <button
+              id="like-button"
+              onClick={() => updateBlog(blog)}
+            >like
+            </button>
           </div>
           <div>{blog.user ? blog.user.name : 'Undefined user'}</div>
           {user.username === blog.user?.username && (
             <button style={removeButtonStyle} onClick={() => deleteBlog(blog)}>
-                            remove
+              remove
             </button>)}
         </>
       )
